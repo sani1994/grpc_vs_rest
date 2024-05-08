@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  database:
+    build:
+      context: .
+      dockerfile: DBDockerfile
+    container_name: grpc-vs-rest-database
+    image: grpc-vs-rest-database
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
