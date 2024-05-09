@@ -4,12 +4,12 @@ import grpc
 
 import data_stream_service_pb2_grpc
 import data_stream_service_pb2
-from db_utils import db_helper
+from db_utils.db_helper import UserDB
 
 
 class UserDataServicer(data_stream_service_pb2_grpc.DataStreamServicer):
     def GetUserByID(self, request, context):
-        _data = db_helper.get_user(id=request.id)[0]
+        _data = UserDB().get_user(id=request.id)[0]
         data = data_stream_service_pb2.UserData()
         data.name = _data.name
         data.email = _data.email
@@ -18,7 +18,7 @@ class UserDataServicer(data_stream_service_pb2_grpc.DataStreamServicer):
         return data
 
     def GetUserList(self, request, context):
-        _datas = db_helper.get_user()
+        _datas = UserDB().get_user()
         _user_data = data_stream_service_pb2.UserDataList()
         for _data in _datas:
             data = data_stream_service_pb2.UserData()
@@ -31,7 +31,7 @@ class UserDataServicer(data_stream_service_pb2_grpc.DataStreamServicer):
 
 
 class GrpcServer:
-    def __init__(self, host='localhost', port='50051', max_workers=10):
+    def __init__(self, host='0.0.0.0', port='50051', max_workers=10):
         self.host = host
         self.port = port
         self.max_workers = max_workers

@@ -1,9 +1,10 @@
-from db_helper import UserDB
+from db_helper import UserDB,User
 
 DATA_SIZE = 10
 
 
 def creat_demo_data():
+    User().create_table()
     for idx in range(DATA_SIZE):
         data = {
             "name": f"user {idx}",

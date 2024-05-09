@@ -21,7 +21,7 @@ class UserResource(Resource):
         }
 
     def get(self, **kwargs):
-        users = UserDatabase().get_user(**kwargs)
+        users = UserDatabase().get_user()
         if not users:
             return {"message": "User not found"}, 404
 

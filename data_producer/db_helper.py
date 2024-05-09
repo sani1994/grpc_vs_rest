@@ -56,5 +56,7 @@ class UserDatabase:
 
     def get_user(self, **kwargs):
         if kwargs:
+            print('kwargs: ', kwargs)
             return self.session.query(User).filter_by(**kwargs).all()
+        print(self.session.query(User).all())
         return self.session.query(User).all()

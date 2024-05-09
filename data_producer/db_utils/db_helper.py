@@ -30,6 +30,10 @@ class User(Base):
     def __repr__(self):
         return f"<User(name='{self.name}', username='{self.username}', email='{self.email}')>"
 
+    @staticmethod
+    def create_table():
+        Base.metadata.create_all(engine)
+
 
 class UserDB:
     def __init__(self):
