@@ -1,6 +1,6 @@
 from db_helper import UserDB,User
 
-DATA_SIZE = 10
+DATA_SIZE = 10000
 
 
 def creat_demo_data():
