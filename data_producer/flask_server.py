@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, Api
-
-from db_helper import UserDatabase
+from db_utils.db_helper import UserDB
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,7 +20,7 @@ class UserResource(Resource):
         }
 
     def get(self, **kwargs):
-        users = UserDatabase().get_user()
+        users = UserDB().get_user()
         if not users:
             return {"message": "User not found"}, 404
 
@@ -32,4 +31,4 @@ class UserResource(Resource):
 api.add_resource(UserResource, '/user')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
