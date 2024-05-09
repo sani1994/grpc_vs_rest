@@ -1,17 +1,24 @@
+import os
 from datetime import datetime
 
-import sqlalchemy
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-engine = sqlalchemy.create_engine("sqlite:///user.db", echo=True)
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", 5432)
+DB_NAME = os.getenv("DB_NAME", "userdb")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "postgres")
+
+engine = create_engine(f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}", echo=True)
 
 Base = declarative_base()
 
 
 class User(Base):
     __tablename__ = "user"
+
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
     username = Column(String(50))
@@ -21,38 +28,32 @@ class User(Base):
     phone_number = Column(String(50))
 
     def __repr__(self):
-        return "<User(name='%s', username='%s', email='%s')>" % (
-            self.name,
-            self.username,
-            self.email,
+        return f"<User(name='{self.name}', username='{self.username}', email='{self.email}')>"
+
+
+class UserDB:
+    def __init__(self):
+        self.Session = sessionmaker(bind=engine)
+        self.session = self.Session()
+
+    def add_user(self, name: str, username: str, email: str, phone_number: str) -> User:
+        user = User(
+            name=name,
+            username=username,
+            email=email,
+            phone_number=phone_number,
+            created=str(datetime.now().timestamp()),
+            modified=str(datetime.now().timestamp())
         )
+        try:
+            self.session.add(user)
+            self.session.commit()
+            return user
+        except ValueError:
+            self.session.rollback()
+            raise ValueError("Data couldn't save")
 
-
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
-def add_user(name:str, username:str, email:str, phone_number:str)->User:
-    user = User(
-        name=name,
-        username=username,
-        email=email,
-        phone_number=phone_number,
-        created=str(datetime.now().timestamp()),
-        modified=str(datetime.now().timestamp())
-    )
-    try:
-        session.add(user)
-        session.commit()
-        return user
-    except ValueError:
-        raise ValueError("Data couldn't save")
-
-
-def get_user(**kwargs):
-    if kwargs:
-        return session.query(User).filter_by(**kwargs).all()
-    return session.query(User).all()
-
-
+    def get_user(self, **kwargs):
+        if kwargs:
+            return self.session.query(User).filter_by(**kwargs).all()
+        return self.session.query(User).all()

@@ -30,13 +30,19 @@ class UserDataServicer(data_stream_service_pb2_grpc.DataStreamServicer):
         return _user_data
 
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    data_stream_service_pb2_grpc.add_DataStreamServicer_to_server(UserDataServicer(), server)
-    server.add_insecure_port("localhost:50051")
-    server.start()
-    server.wait_for_termination()
+class GrpcServer:
+    def __init__(self, host='localhost', port='50051', max_workers=10):
+        self.host = host
+        self.port = port
+        self.max_workers = max_workers
 
+    def serve(self):
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=self.max_workers))
+        data_stream_service_pb2_grpc.add_DataStreamServicer_to_server(UserDataServicer(), server)
+        server.add_insecure_port(f"{self.host}:{self.port}")
+        server.start()
+        print(f'Server started at {self.host}:{self.port}')
+        server.wait_for_termination()
 
 if __name__ == "__main__":
-    serve()
+    GrpcServer().serve()

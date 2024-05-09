@@ -1,4 +1,4 @@
-from db_helper import add_user
+from db_helper import UserDB
 
 DATA_SIZE = 10
 
@@ -11,7 +11,7 @@ def creat_demo_data():
             "phone_number": "01521202936",
             "email": f"user_{idx}@email.com"
         }
-        add_user(**data)
+        UserDB().add_user(**data)
 
 
 if __name__ == "__main__":

@@ -7,5 +7,38 @@ services:
     container_name: grpc-vs-rest-database
     image: grpc-vs-rest-database
     restart: unless-stopped
+  flask_server:
+    build:
+      context: .
+      dockerfile: FlaskDockerfile
+    container_name: grpc-vs-rest-flask
+    image: grpc-vs-rest-flask
+    restart: unless-stopped
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=userdb
+      - POSTGRES_DB=userdb
     ports:
-      - "5432:5432"
+      - "5000:5000"
+    depends_on:
+      - database
+  grpc_server:
+    build:
+      context: .
+      dockerfile: GrpcDockerfile
+    container_name: grpc-vs-rest-grpc
+    image: grpc-vs-rest-grpc
+    restart: unless-stopped
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=userdb
+    ports:
+      - "50051:50051"
+    depends_on:
+      - database
