@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -o ./k8s/
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: grpc-server
+  name: grpc-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: grpc-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -o ./k8s/
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: grpc-server
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: database
+            - name: DB_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              value: userdb
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+          image: sani1994/grpc-vs-rest-grpc:latest
+          name: grpc-vs-rest-grpc
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50051
+          resources: {}
+      restartPolicy: Always
+status: {}
